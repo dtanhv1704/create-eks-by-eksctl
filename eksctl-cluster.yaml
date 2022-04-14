@@ -2,31 +2,31 @@
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
-  name: demo # Specify EKS Cluster name
-  region: ap-southeast-1 # Specify the aws region
+  name: CLUSTER_NAME # Specify EKS Cluster name
+  region: AWS_REGION # Specify the aws region
   version: "1.21" # Specify the EKS version
   tags:
-    project: eks-demo
+    project: PROJECT_NAME
 vpc:
-  id: vpc-0274a92a052cbcb0b # Specify the VPC_ID to the eksctl command
+  id: VPC_ID # Specify the VPC_ID to the eksctl command
   subnets:
     public:
       cluster-public-subnet-01:
-        id: subnet-0bfc16798293edb45
+        id: PUBLIC_SUBNET_ID_01
       cluster-public-subnet-02:
-        id: subnet-08a08e98bc48df619
+        id: PUBLIC_SUBNET_ID_02
       cluster-public-subnet-03:
-        id: subnet-0c73b4d30b5324701
+        id: PUBLIC_SUBNET_ID_03
     private:
       cluster-worker-subnet-01: 
-        id: subnet-0ff35aafb7b88c507
+        id: PRIVATE_SUBNET_ID_01
       cluster-worker-subnet-02:
-        id: subnet-06be8644ecb95de84
+        id: PRIVATE_SUBNET_ID_02
       cluster-worker-subnet-03:
-        id: subnet-03533ccab5ff1368a
+        id: PRIVATE_SUBNET_ID_03
 # Create Worker nodegroups (in private subnets)
 nodeGroups: 
-- name: worker
+- name: NODEGROUP_NAME
   labels:
     role: worker
   amiFamily: AmazonLinux2
@@ -35,7 +35,7 @@ nodeGroups:
   maxSize: 8
   instancesDistribution:
     maxPrice: 0.09
-    instanceTypes: ["t3.xlarge","t3a.xlarge","t3.large","t3a.large"]
+    instanceTypes: ["t3.xlarge","t3a.xlarge","t3.large","t3a.large"] #Define instance type
     onDemandBaseCapacity: 1
     onDemandPercentageAboveBaseCapacity: 25
     spotAllocationStrategy: "capacity-optimized"
@@ -46,9 +46,9 @@ nodeGroups:
   ssh:
     enableSsm: true
   tags:
-    project: eks-demo
+    project: PROJECT_NAME
     k8s.io/cluster-autoscaler/enabled: "true"
-    k8s.io/cluster-autoscaler/demo: "owned"
+    k8s.io/cluster-autoscaler/CLUSTER_NAME: "owned" # Replace CLUSTER_NAME by your cluster
   subnets:
     - cluster-worker-subnet-01
     - cluster-worker-subnet-02
