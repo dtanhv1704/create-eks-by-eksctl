@@ -1,0 +1,60 @@
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: CLUSTER_NAME # Specify EKS Cluster name
+  region: AWS_REGION # Specify the aws region
+  version: "1.21" # Specify the EKS version
+  tags:
+    project: PROJECT_NAME # Define project name
+vpc:
+  id: VPC_ID # Specify the VPC_ID to the eksctl command
+  subnets:
+    public:
+      cluster-public-subnet-01:
+        id: PUBLIC_SUBNET_ID_01
+      cluster-public-subnet-02:
+        id: PUBLIC_SUBNET_ID_02
+      cluster-public-subnet-03:
+        id: PUBLIC_SUBNET_ID_03
+    private:
+      cluster-worker-subnet-01: 
+        id: PRIVATE_SUBNET_ID_01
+      cluster-worker-subnet-02:
+        id: PRIVATE_SUBNET_ID_02
+      cluster-worker-subnet-03:
+        id: PRIVATE_SUBNET_ID_03
+# Create Worker nodegroups (in private subnets)
+nodeGroups: 
+- name: NODEGROUP_NAME
+  labels:
+    role: NODEGROUP_ROLE
+  amiFamily: AmazonLinux2
+  minSize: 1
+  desiredCapacity: 1
+  maxSize: 8
+  instancesDistribution:
+    maxPrice: 0.09
+    instanceTypes: ["t3.xlarge","t3a.xlarge","t3.large","t3a.large"] #Define instance type
+    onDemandBaseCapacity: 1
+    onDemandPercentageAboveBaseCapacity: 25
+    spotAllocationStrategy: "capacity-optimized"
+  privateNetworking: true
+  volumeSize: 100
+  volumeType: gp3
+  volumeEncrypted: true
+  ssh:
+    enableSsm: true
+  tags:
+    project: PROJECT_NAME
+    k8s.io/cluster-autoscaler/enabled: "true"
+    k8s.io/cluster-autoscaler/CLUSTER_NAME: "owned" # Replace CLUSTER_NAME by your cluster
+  subnets:
+    - cluster-worker-subnet-01
+    - cluster-worker-subnet-02
+    - cluster-worker-subnet-03
+# Enable Cloudwatch
+cloudWatch:
+  clusterLogging:
+    # enable specific types of cluster control plane logs
+    enableTypes: ["all"]
